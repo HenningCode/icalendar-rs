@@ -1,5 +1,6 @@
 use chrono::*;
 use icalendar::*;
+use icalendar_duration::Rfc5545Duration;
 use pretty_assertions::assert_eq;
 
 /// Taken from https://datatracker.ietf.org/doc/html/rfc5545
@@ -47,7 +48,7 @@ fn test_alarm_to_string() {
         .summary("Submit Income Taxes")
         .append_component(
             Alarm::audio(Utc.with_ymd_and_hms(1998, 4, 3, 12, 0, 0).unwrap())
-                .duration_and_repeat(icalendar::Duration::hours(1), 4)
+                .duration_and_repeat(Rfc5545Duration::hours(1), 4)
                 .uid("OverwriteForConsistency")
                 .add_property("DTSTAMP", "19980130T134500Z")
                 .done(),

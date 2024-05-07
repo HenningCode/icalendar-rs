@@ -1,5 +1,6 @@
 use chrono::*;
 use icalendar::*;
+use icalendar_duration::Rfc5545Duration;
 
 fn main() {
     let mut calendar = Calendar::new();
@@ -16,8 +17,8 @@ fn main() {
         .status(TodoStatus::NeedsAction)
         .percent_complete(98)
         .alarm(
-            Alarm::audio(-icalendar::Duration::minutes(10))
-                .duration_and_repeat(icalendar::Duration::minutes(1), 4),
+            Alarm::audio(-Rfc5545Duration::minutes(10))
+                .duration_and_repeat(Rfc5545Duration::minutes(1), 4),
         )
         .done();
 
@@ -32,7 +33,7 @@ fn main() {
                         "you should test your implementation",
                 Utc::now() + chrono::Duration::minutes(1),
             )
-            .duration_and_repeat(icalendar::Duration::minutes(1), 4),
+            .duration_and_repeat(Rfc5545Duration::minutes(1), 4),
         )
         .done();
 
@@ -45,9 +46,9 @@ fn main() {
         .alarm(
             Alarm::display(
                         "you should test your implementation",
-                        (-icalendar::Duration::minutes(10), Related::End),
+                        (-Rfc5545Duration::minutes(10), Related::End),
             )
-            .duration_and_repeat(icalendar::Duration::minutes(1), 4),
+            .duration_and_repeat(Rfc5545Duration::minutes(1), 4),
         )
         .done();
 
@@ -59,7 +60,7 @@ fn main() {
         .status(TodoStatus::NeedsAction)
         .alarm(
             Alarm::audio(now + chrono::Duration::minutes(1))
-                .duration_and_repeat(icalendar::Duration::minutes(1), 4),
+                .duration_and_repeat(Rfc5545Duration::minutes(1), 4),
         )
         .done();
 

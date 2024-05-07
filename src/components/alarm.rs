@@ -33,28 +33,29 @@ use super::*;
 /// ```rust
 ///  # use chrono::*;
 ///  # use icalendar::*;
+///  # use icalendar_duration::Rfc5545Duration;
 ///
 ///  // alarm will occur one minute from now
 ///  let event_with_absolute_audio_alarm = Event::new()
 ///      .alarm(
-///          Alarm::audio(Utc::now() + Duration::minutes(1))
-///          .duration_and_repeat(Duration::minutes(1), 4)
+///          Alarm::audio(Utc::now() + Rfc5545Duration::minutes(1))
+///          .duration_and_repeat(Rfc5545Duration::minutes(1), 4)
 ///      )
 ///      .done();
 ///
 ///  // alarm will occur one minute before the start
 ///  let event_with_relative_display_alarm = Event::new()
 ///      .alarm(
-///          Alarm::display("ALARM! ALARM!", -Duration::minutes(1))
-///          .duration_and_repeat(Duration::minutes(1), 4)
+///          Alarm::display("ALARM! ALARM!", -Rfc5545Duration::minutes(1))
+///          .duration_and_repeat(Rfc5545Duration::minutes(1), 4)
 ///      )
 ///      .done();
 ///
 ///  // alarm will occur one minute before the end
 ///  let event_with_relative_display_alarm_end = Event::new()
 ///      .alarm(
-///          Alarm::display("ALARM! ALARM!", (-Duration::minutes(1), Related::End))
-///          .duration_and_repeat(Duration::minutes(1), 4)
+///          Alarm::display("ALARM! ALARM!", (-Rfc5545Duration::minutes(1), Related::End))
+///          .duration_and_repeat(Rfc5545Duration::minutes(1), 4)
 ///      )
 ///      .done();
 /// ```
@@ -422,9 +423,10 @@ pub mod properties {
     impl Trigger {
         /// ```
         /// # use icalendar::*;
+        /// # use icalendar_duration::Rfc5545Duration;
         /// assert_eq!(
-        ///     Trigger::after_start(Duration::hours(1)),
-        ///     Trigger::Duration(Duration::hours(1), Some(Related::Start))
+        ///     Trigger::after_start(Rfc5545Duration::hours(1)),
+        ///     Trigger::Duration(Rfc5545Duration::hours(1), Some(Related::Start))
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
@@ -434,9 +436,10 @@ pub mod properties {
 
         /// ```
         /// # use icalendar::*;
+        /// # use icalendar_duration::Rfc5545Duration;
         /// assert_eq!(
-        ///     Trigger::after_end(Duration::hours(1)),
-        ///     Trigger::Duration(Duration::hours(1), Some(Related::End))
+        ///     Trigger::after_end(Rfc5545Duration::hours(1)),
+        ///     Trigger::Duration(Rfc5545Duration::hours(1), Some(Related::End))
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
@@ -446,9 +449,10 @@ pub mod properties {
 
         /// ```
         /// # use icalendar::*;
+        /// # use icalendar_duration::Rfc5545Duration;
         /// assert_eq!(
-        ///     Trigger::before_start(Duration::hours(1)),
-        ///     Trigger::Duration(-Duration::hours(1), Some(Related::Start))
+        ///     Trigger::before_start(Rfc5545Duration::hours(1)),
+        ///     Trigger::Duration(-Rfc5545Duration::hours(1), Some(Related::Start))
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
@@ -458,9 +462,10 @@ pub mod properties {
 
         /// ```
         /// # use icalendar::*;
+        /// # use icalendar_duration::Rfc5545Duration;
         /// assert_eq!(
-        ///     Trigger::before_end(Duration::hours(1)),
-        ///     Trigger::Duration(-Duration::hours(1), Some(Related::End))
+        ///     Trigger::before_end(Rfc5545Duration::hours(1)),
+        ///     Trigger::Duration(-Rfc5545Duration::hours(1), Some(Related::End))
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
@@ -561,6 +566,12 @@ pub mod properties {
         }
     }
 
+    impl From<Rfc5545Duration> for Property {
+        fn from(value: Rfc5545Duration) -> Self {
+            Property::new_pre_alloc("DURATION".into(), value.to_string())
+        }
+    }
+
     #[test]
     fn test_trigger() {
         let prop: Property = Trigger::from(Rfc5545Duration::weeks(14)).into();
@@ -625,7 +636,7 @@ pub mod properties {
 
     #[test]
     fn test_trigger_dur_from_str_start() {
-        let dur = Duration::minutes(15);
+        let dur = Rfc5545Duration::minutes(15);
         let alarm_with_rel_start_trigger = Alarm::default()
             .append_property(Trigger::from((dur, Related::Start)))
             .done();
@@ -636,5 +647,4 @@ pub mod properties {
             Some(Trigger::Duration(dur, Some(Related::Start)))
         );
     }
-
 }
