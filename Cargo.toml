@@ -22,7 +22,7 @@ parser = ["nom"]
 [dependencies]
 serde = { version = "1.0", optional = true, features = ["derive"] }
 serde_json = { version = "1.0", optional = true }
-iso8601 = "0.6"
+icalendar-duration = {path = "../valarmd/icalendar-duration"}
 chrono-tz = {version = "0.8", optional = true }
 
 [dependencies.chrono]

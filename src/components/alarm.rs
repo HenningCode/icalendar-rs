@@ -2,6 +2,8 @@ use std::{collections::HashMap, fmt::Debug, str::FromStr};
 
 pub use self::properties::{Related, Trigger};
 
+use icalendar_duration::Rfc5545Duration;
+
 use self::properties::*;
 use super::*;
 
@@ -178,7 +180,7 @@ impl Alarm {
     /// which must not occur independent from one another
     pub fn duration_and_repeat<R: Copy + Clone + Into<Repeat>>(
         mut self,
-        duration: Duration,
+        duration: Rfc5545Duration,
         repeat_count: R,
     ) -> Self {
         // self.add_property("ACTION", action.as_str());
@@ -235,20 +237,20 @@ impl Alarm {
 
 #[test]
 fn test_audio() {
-    let alarm = Alarm::audio((Duration::minutes(15), Related::Start))
-        .duration_and_repeat(Duration::minutes(5), 3)
+    let alarm = Alarm::audio((Rfc5545Duration::minutes(15), Related::Start))
+        .duration_and_repeat(Rfc5545Duration::minutes(5), 3)
         .done();
     assert_eq!(alarm.get_action(), Some(Action::Audio));
     assert_eq!(
         alarm.get_trigger(),
         Some(Trigger::Duration(
-            Duration::minutes(15),
+            Rfc5545Duration::minutes(15),
             Related::Start.into()
         ))
     );
     assert_eq!(
         alarm.get_trigger().unwrap().as_duration(),
-        Some(&Duration::minutes(15))
+        Some(&Rfc5545Duration::minutes(15))
     );
     assert_eq!(alarm.get_trigger().unwrap().related(), Some(Related::Start));
     assert_eq!(alarm.get_repeat(), 3);
@@ -284,6 +286,7 @@ pub mod properties {
     use crate::components::alarm::properties::Parameter;
 
     use self::date_time::parse_duration;
+    use icalendar_duration::Rfc5545Duration;
 
     use super::*;
 
@@ -411,7 +414,7 @@ pub mod properties {
     #[derive(Clone, Debug, PartialEq, Eq)]
     pub enum Trigger {
         /// Duration in relation to either Start or End of the event
-        Duration(Duration, Option<Related>),
+        Duration(Rfc5545Duration, Option<Related>),
         /// Absolute DateTime of the Trigger
         DateTime(CalendarDateTime),
     }
@@ -425,7 +428,7 @@ pub mod properties {
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
-        pub fn after_start(duration: Duration) -> Trigger {
+        pub fn after_start(duration: Rfc5545Duration) -> Trigger {
             Trigger::Duration(duration, Some(Related::Start))
         }
 
@@ -437,7 +440,7 @@ pub mod properties {
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
-        pub fn after_end(duration: Duration) -> Trigger {
+        pub fn after_end(duration: Rfc5545Duration) -> Trigger {
             Trigger::Duration(duration, Some(Related::End))
         }
 
@@ -449,7 +452,7 @@ pub mod properties {
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
-        pub fn before_start(duration: Duration) -> Trigger {
+        pub fn before_start(duration: Rfc5545Duration) -> Trigger {
             Trigger::Duration(-duration, Some(Related::Start))
         }
 
@@ -461,7 +464,7 @@ pub mod properties {
         /// )
         /// ```
         /// please don't supply negative durations, you'll just confuse everybody
-        pub fn before_end(duration: Duration) -> Trigger {
+        pub fn before_end(duration: Rfc5545Duration) -> Trigger {
             Trigger::Duration(-duration, Some(Related::End))
         }
 
@@ -474,7 +477,7 @@ pub mod properties {
         }
 
         /// Returns the containing [`Duration`] if the [`Trigger`] contains one
-        pub fn as_duration(&self) -> Option<&Duration> {
+        pub fn as_duration(&self) -> Option<&Rfc5545Duration> {
             match self {
                 Trigger::Duration(duration, _) => Some(duration),
                 Trigger::DateTime(_) => None,
@@ -490,8 +493,8 @@ pub mod properties {
         }
     }
 
-    impl From<Duration> for Trigger {
-        fn from(duration: Duration) -> Self {
+    impl From<Rfc5545Duration> for Trigger {
+        fn from(duration: Rfc5545Duration) -> Self {
             Trigger::Duration(duration, None)
         }
     }
@@ -505,8 +508,8 @@ pub mod properties {
         }
     }
 
-    impl From<(Duration, Related)> for Trigger {
-        fn from((duration, related): (Duration, Related)) -> Self {
+    impl From<(Rfc5545Duration, Related)> for Trigger {
+        fn from((duration, related): (Rfc5545Duration, Related)) -> Self {
             Trigger::Duration(duration, Some(related))
         }
     }
@@ -560,7 +563,7 @@ pub mod properties {
 
     #[test]
     fn test_trigger() {
-        let prop: Property = Trigger::from(Duration::weeks(14)).into();
+        let prop: Property = Trigger::from(Rfc5545Duration::weeks(14)).into();
         let mut out = String::new();
         prop.fmt_write(&mut out).unwrap();
     }
@@ -609,7 +612,7 @@ pub mod properties {
 
     #[test]
     fn test_trigger_dur_from_str() {
-        let dur = Duration::minutes(15);
+        let dur = Rfc5545Duration::minutes(15);
 
         let alarm_with_rel_trigger = Alarm::default().append_property(Trigger::from(dur)).done();
         alarm_with_rel_trigger.print().unwrap();

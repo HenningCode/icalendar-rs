@@ -106,7 +106,7 @@ pub use crate::{
     components::{
         alarm::{Alarm, Related, Trigger},
         date_time::{CalendarDateTime, DatePerhapsTime},
-        Component, Event, EventLike, Todo, Venue, Duration
+        Component, Event, EventLike, Todo, Venue 
     },
     properties::{Class, EventStatus, Parameter, Property, TodoStatus, ValueType},
 };
