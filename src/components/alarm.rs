@@ -286,8 +286,8 @@ pub mod properties {
 
     use crate::components::alarm::properties::Parameter;
 
-    use icalendar_duration::Rfc5545Duration;
     use crate::components::date_time::parse_duration;
+    use icalendar_duration::Rfc5545Duration;
 
     use super::*;
 

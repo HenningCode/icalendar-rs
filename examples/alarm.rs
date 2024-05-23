@@ -30,7 +30,7 @@ fn main() {
         .ends(Utc::now() + chrono::Duration::hours(1))
         .alarm(
             Alarm::display(
-                        "you should test your implementation",
+                "you should test your implementation",
                 Utc::now() + chrono::Duration::minutes(1),
             )
             .duration_and_repeat(Rfc5545Duration::minutes(1), 4),
@@ -45,8 +45,8 @@ fn main() {
         .status(TodoStatus::NeedsAction)
         .alarm(
             Alarm::display(
-                        "you should test your implementation",
-                        (-Rfc5545Duration::minutes(10), Related::End),
+                "you should test your implementation",
+                (-Rfc5545Duration::minutes(10), Related::End),
             )
             .duration_and_repeat(Rfc5545Duration::minutes(1), 4),
         )
