@@ -219,7 +219,9 @@ impl TryFrom<(NaiveDateTime, &str)> for CalendarDateTime {
     type Error = String;
 
     fn try_from((dt, maybe_tz): (NaiveDateTime, &str)) -> Result<Self, Self::Error> {
-        let tzid: chrono_tz::Tz = maybe_tz.parse()?;
+        let tzid: chrono_tz::Tz = maybe_tz
+            .parse()
+            .map_err(|e: chrono_tz::ParseError| e.to_string())?;
         Ok(CalendarDateTime::from((dt, tzid)))
     }
 }
@@ -298,8 +300,8 @@ impl From<DateTime<Utc>> for DatePerhapsTime {
 // }
 
 #[allow(deprecated)]
-impl From<Date<Utc>> for DatePerhapsTime {
-    fn from(dt: Date<Utc>) -> Self {
+impl From<chrono::Date<Utc>> for DatePerhapsTime {
+    fn from(dt: chrono::Date<Utc>) -> Self {
         Self::Date(dt.naive_utc())
     }
 }
